@@ -36,6 +36,22 @@ def create_store():
     return new_store, 201
 
 
+@app.get("/store/<int:id>")
+def get_store_by_id(id):
+    for store in stores:
+        if store['id'] == id:
+            return store, 200
+    return {'message': 'Store not found'}, 404
+
+
+@app.get("/store/<int:id>/item")
+def get_items_store_by_id(id):
+    for store in stores:
+        if store['id'] == id:
+            return {'items': store['items']}, 200
+    return {'message': 'Store not found'}, 404
+
+
 @app.post("/store/<int:id>/item")
 def create_item(id):
     body = request.get_json()
