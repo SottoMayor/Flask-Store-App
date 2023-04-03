@@ -1,0 +1,1 @@
+To see the app dependencies run 'pip freeze > requirements.txt' command in the terminal.
