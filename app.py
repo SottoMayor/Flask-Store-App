@@ -33,4 +33,4 @@ def create_store():
     new_store = {"name": body["name"], "items": [],
                  "id": (randint(1, 10) * 100 * randint(1, 10))}
     stores.append(new_store)
-    return new_store
+    return new_store, 201
