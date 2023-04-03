@@ -6,7 +6,7 @@ app = Flask(__name__)
 stores = [
     {
         "name": "David Store",
-        "id": (randint(1, 10) * 100 * randint(1, 10)),
+        "id": 1,
         "items": [
             {
                 "name": "PC",
@@ -34,3 +34,15 @@ def create_store():
                  "id": (randint(1, 10) * 100 * randint(1, 10))}
     stores.append(new_store)
     return new_store, 201
+
+
+@app.post("/store/<int:id>/item")
+def create_item(id):
+    body = request.get_json()
+    new_item = {"name": body["name"], "price": body["price"]}
+
+    for index, store in enumerate(stores):
+        if(store['id'] == id):
+            stores[index]['items'].append(new_item)
+            return new_item, 201
+    return {'message': 'ID invalid!'}, 404
