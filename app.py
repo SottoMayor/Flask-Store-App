@@ -1,20 +1,8 @@
+import uuid
 from flask import Flask, request
-from random import randint
+from db import stores, items
 
 app = Flask(__name__)
-
-stores = [
-    {
-        "name": "David Store",
-        "id": 1,
-        "items": [
-            {
-                "name": "PC",
-                "price": "5000"
-            }
-        ]
-    }
-]
 
 
 @app.route("/")
@@ -24,41 +12,48 @@ def hello_world():
 
 @app.get("/store")
 def get_stores():
-    return {"stores": stores}
+    return {"stores": list(stores.values())}, 200
 
 
 @app.post("/store")
 def create_store():
-    body = request.get_json()
-    new_store = {"name": body["name"], "items": [],
-                 "id": (randint(1, 10) * 100 * randint(1, 10))}
-    stores.append(new_store)
+    store_data = request.get_json()
+    new_id = uuid.uuid4().hex()
+    new_store = {**store_data,
+                 "id": new_id}
+    stores[new_id] = new_store
     return new_store, 201
 
 
-@app.get("/store/<int:id>")
+@app.get("/store/<string:id>")
 def get_store_by_id(id):
-    for store in stores:
-        if store['id'] == id:
-            return store, 200
-    return {'message': 'Store not found'}, 404
+    try:
+        return stores[id], 200
+    except KeyError:
+        return {'message': 'Store not found'}, 404
 
 
-@app.get("/store/<int:id>/item")
-def get_items_store_by_id(id):
-    for store in stores:
-        if store['id'] == id:
-            return {'items': store['items']}, 200
-    return {'message': 'Store not found'}, 404
+@app.get("/item/<string:id>")
+def get_item(id):
+    try:
+        return items[id], 200
+    except KeyError:
+        return {'message': 'Item not found'}, 404
 
 
-@app.post("/store/<int:id>/item")
-def create_item(id):
-    body = request.get_json()
-    new_item = {"name": body["name"], "price": body["price"]}
+@app.get("/item")
+def get_items():
+    return {"items": list(items.values())}, 200
 
-    for index, store in enumerate(stores):
-        if(store['id'] == id):
-            stores[index]['items'].append(new_item)
-            return new_item, 201
-    return {'message': 'ID invalid!'}, 404
+
+@app.post("/item")
+def create_item():
+    item_data = request.get_json()
+
+    if (item_data['store_id'] not in stores):
+        return {'message': 'ID invalid!'}, 404
+
+    new_id = uuid.uuid4().hex()
+    new_item = {**item_data, 'id': new_id}
+    items[new_id] = new_item
+    return new_item, 201
