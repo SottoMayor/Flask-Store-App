@@ -19,6 +19,11 @@ def get_stores():
 @app.post("/store")
 def create_store():
     store_data = request.get_json()
+
+    for store in stores.values():
+        if (store["name"] == store_data["name"]):
+            abort(409, message="Store already exists!")
+
     new_id = uuid.uuid4().hex
     new_store = {**store_data,
                  "id": new_id}
@@ -50,6 +55,11 @@ def get_items():
 @app.post("/item")
 def create_item():
     item_data = request.get_json()
+
+    for item in items.values():
+        if (item["name"] == item_data["name"] and
+                item["store_id"] == item_data["store_id"]):
+            abort(409, message="Item already exists!")
 
     if (item_data['store_id'] not in stores):
         abort(404, message="ID Invalid!!")
