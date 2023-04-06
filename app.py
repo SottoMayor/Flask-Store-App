@@ -11,6 +11,9 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
+# STORES ...
+
+
 @app.get("/store")
 def get_stores():
     return {"stores": list(stores.values())}, 200
@@ -39,6 +42,18 @@ def get_store_by_id(id):
         abort(404, message="Store not found")
 
 
+@app.delete("/store/<string:id>")
+def delete_store(id):
+    try:
+        del stores[id]
+        return {'message': 'Store deleted successfully!'}, 200
+    except KeyError:
+        abort(404, message="Store not found")
+
+
+# ITEMS ...
+
+
 @app.get("/item/<string:id>")
 def get_item(id):
     try:
@@ -55,6 +70,7 @@ def get_items():
 @app.post("/item")
 def create_item():
     item_data = request.get_json()
+    print(item_data)
 
     for item in items.values():
         if (item["name"] == item_data["name"] and
@@ -68,3 +84,25 @@ def create_item():
     new_item = {**item_data, 'id': new_id}
     items[new_id] = new_item
     return new_item, 201
+
+
+@app.put('/item/<string:id>')
+def update_item(id):
+    item_data = request.get_json()
+
+    try:
+        item = items[id]
+        item |= item_data
+
+        return item
+    except KeyError:
+        abort(404, message='Trying to update an inexisting item!')
+
+
+@app.delete("/item/<string:id>")
+def delete_item(id):
+    try:
+        del items[id]
+        return {'message': 'Item deleted successfully!'}, 200
+    except KeyError:
+        abort(404, message="Item not found")
