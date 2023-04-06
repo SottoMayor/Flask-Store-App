@@ -36,18 +36,18 @@ class Item(MethodView):
 
 @blp.route("/item")
 class ItemList(MethodView):
-    def get(self, id):
+    def get(self):
         return {"items": list(items.values())}, 200
 
-    def post(self, id):
+    def post(self):
         item_data = request.get_json()
 
         for item in items.values():
             if (item["name"] == item_data["name"] and
-                    item["store_id"] == item_data["store_id"]):
+                    item["item_id"] == item_data["item_id"]):
                 abort(409, message="Item already exists!")
 
-        if (item_data['store_id'] not in items):
+        if (item_data['item_id'] not in items):
             abort(404, message="ID Invalid!!")
 
         new_id = uuid.uuid4().hex

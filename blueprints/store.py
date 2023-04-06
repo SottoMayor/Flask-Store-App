@@ -24,7 +24,7 @@ class Store(MethodView):
             abort(404, message="Store not found")
 
 
-@blp.route('/store/<string:id>')
+@blp.route('/store')
 class StoreList(MethodView):
     def get(self):
         return {"stores": list(stores.values())}, 200
