@@ -7,6 +7,7 @@ from db import items
 blp = Blueprint('item', __name__, description="Operations on Items")
 
 
+@blp.route("/item/<string:id>")
 class Item(MethodView):
     def get(self, id):
         try:
@@ -33,6 +34,7 @@ class Item(MethodView):
             abort(404, message="Item not found")
 
 
+@blp.route("/item")
 class ItemList(MethodView):
     def get(self, id):
         return {"items": list(items.values())}, 200
