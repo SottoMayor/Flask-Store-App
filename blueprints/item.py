@@ -1,8 +1,8 @@
 import uuid
-from flask import request
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
 from db import items
+from schemas.schemas import ItemSchema, ItemUpdateSchema
 
 blp = Blueprint('item', __name__, description="Operations on Items")
 
@@ -15,8 +15,8 @@ class Item(MethodView):
         except KeyError:
             abort(404, message="Item not found")
 
-    def put(self, id):
-        item_data = request.get_json()
+    @blp.arguments(ItemUpdateSchema)
+    def put(self, item_data, id):
 
         try:
             item = items[id]
@@ -39,8 +39,8 @@ class ItemList(MethodView):
     def get(self):
         return {"items": list(items.values())}, 200
 
-    def post(self):
-        item_data = request.get_json()
+    @blp.arguments(ItemSchema)
+    def post(self, item_data):
 
         for item in items.values():
             if (item["name"] == item_data["name"] and

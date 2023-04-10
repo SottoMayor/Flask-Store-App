@@ -1,8 +1,8 @@
 import uuid
-from flask import request
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
 from db import stores
+from schemas.schemas import StoreSchema
 
 
 blp = Blueprint('stores', __name__, description="Operations on Stores.")
@@ -29,8 +29,8 @@ class StoreList(MethodView):
     def get(self):
         return {"stores": list(stores.values())}, 200
 
-    def post(self):
-        store_data = request.get_json()
+    @blp.arguments(StoreSchema)
+    def post(self, store_data):
 
         for store in stores.values():
             if (store["name"] == store_data["name"]):
